@@ -119,6 +119,10 @@ def make_tree():
     return img
 
 
+def make_player_two():
+    new = new
+    return new
+
 def make_player_sheet():
     """
     Returns a 16x32 image: two 16x16 frames stacked vertically.

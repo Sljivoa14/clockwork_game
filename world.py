@@ -87,6 +87,10 @@ class World:
             ROAD: pygame.image.load("assets/tile_road.png").convert_alpha(),
             SIDEWALK: pygame.image.load("assets/tile_sidewalk.png").convert_alpha(),
             BUILDING: pygame.image.load("assets/tile_building.png").convert_alpha(),
+            BUILDING2: pygame.image.load("assets/tile_building2.png").convert_alpha(),
+            BUILDING3: pygame.image.load("").convert_alpha(),
+            BUILDING4: pygame.image.load("").convert_alpha(),
+            BUILDING5: pygame.image.load("").convert_alpha(),
             TREE: pygame.image.load("assets/tile_tree.png").convert_alpha(),
         }
         # Trees are drawn on top of grass, so pre-render a grass+tree tile.
