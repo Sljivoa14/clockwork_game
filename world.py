@@ -19,10 +19,16 @@ GRASS = 0
 ROAD = 1
 SIDEWALK = 2
 BUILDING = 3
+
 TREE = 4
 
+BUILDING_brutalist = 5
+BUILDING_office = 6
+BUILDING_shop = 7
+BUILDING_tenement = 8
+
 # Which tile IDs the player CANNOT walk through.
-SOLID_TILES = {BUILDING, TREE}
+SOLID_TILES = {BUILDING,BUILDING_brutalist,BUILDING_office, BUILDING_shop, BUILDING_tenement, TREE}
 
 
 def generate_map():
@@ -87,10 +93,10 @@ class World:
             ROAD: pygame.image.load("assets/tile_road.png").convert_alpha(),
             SIDEWALK: pygame.image.load("assets/tile_sidewalk.png").convert_alpha(),
             BUILDING: pygame.image.load("assets/tile_building.png").convert_alpha(),
-            BUILDING2: pygame.image.load("assets/tile_building2.png").convert_alpha(),
-            BUILDING3: pygame.image.load("").convert_alpha(),
-            BUILDING4: pygame.image.load("").convert_alpha(),
-            BUILDING5: pygame.image.load("").convert_alpha(),
+            BUILDING_brutalist: pygame.image.load("assets/building_brutalist.png").convert_alpha(),
+            BUILDING_office: pygame.image.load("assets/building_office,png").convert_alpha(),
+            BUILDING_shop: pygame.image.load("assets/building_shop.png").convert_alpha(),
+            BUILDING_tenement: pygame.image.load("assets/building_tenement.png").convert_alpha(),
             TREE: pygame.image.load("assets/tile_tree.png").convert_alpha(),
         }
         # Trees are drawn on top of grass, so pre-render a grass+tree tile.
