@@ -8,14 +8,29 @@ The map is represented as a 2D list of integers. Each integer is a
 "tile ID" that maps to a tile type (grass, road, building, etc.).
 This is a very common way games store maps - you'll see the same idea
 in tools like Tiled (a popular free map editor).
+
+Tile IDs:
+  0  GRASS
+  1  ROAD
+  2  SIDEWALK
+  3  BUILDING            original brick (outer wall)
+  4  TREE                tile_tree.png
+  5  TREE2               tile_tree2.png
+  6  BUILDING2           tile_building2.png
+  7  BUILDING_OFFICE     building_office.png
+  8  BUILDING_SHOP       building_shop.png
+  9  BUILDING_TENEMENT   building_tenement.png
+  10 BUILDING_BRUTALIST  building_brutalist.png
 """
+
+
 
 import random
 import pygame
-from settings import TILE_SIZE, WORLD_WIDTH, WORLD_HEIGHT, RENDER_WIDTH, RENDER_HEIGHT
+from settings import TILE_SIZE, WORLD_WIDTH, WORLD_HEIGHT, RENDER_WIDTH, RENDER_HEIGHT, BLOCK_SIZE
 
 # --- Tile IDs ---
-GRASS = 0
+"""GRASS = 0
 ROAD = 1
 SIDEWALK = 2
 BUILDING = 3
@@ -26,15 +41,36 @@ BUILDING_brutalist = 5
 BUILDING_office = 6
 BUILDING_shop = 7
 BUILDING_tenement = 8
+"""
+
+GRASS               = 0
+ROAD                = 1
+SIDEWALK            = 2
+BUILDING            = 3
+TREE                = 4
+TREE2               = 5
+BUILDING2           = 6
+BUILDING_OFFICE     = 7
+BUILDING_SHOP       = 8
+BUILDING_TENEMENT   = 9
+BUILDING_BRUTALIST  = 10
 
 # Which tile IDs the player CANNOT walk through.
-SOLID_TILES = {BUILDING,BUILDING_brutalist,BUILDING_office, BUILDING_shop, BUILDING_tenement, TREE}
+SOLID_TILES = { BUILDING, BUILDING2,BUILDING_OFFICE, BUILDING_SHOP,
+    BUILDING_TENEMENT, BUILDING_BRUTALIST, TREE, TREE2,
+}
 
+
+INTERIOR_BUILDINGS = [
+    BUILDING, BUILDING2, BUILDING_OFFICE, BUILDING_SHOP, BUILDING_TENEMENT, BUILDING_BRUTALIST
+]
+
+def _free_bands(blocked: set, length: int):
+    """Return (start, end) inclusive index ranges NOT in `blocked`."""
 
 def generate_map():
     """
     Builds the starting area as a 2D list: map_data[y][x] -> tile id.
-
     Layout idea:
     - A ring of buildings around the whole map (so the player can't
       wander off into the void yet).

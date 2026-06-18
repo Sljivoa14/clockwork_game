@@ -24,12 +24,27 @@ WINDOW_WIDTH = RENDER_WIDTH * SCALE        # 960
 WINDOW_HEIGHT = RENDER_HEIGHT * SCALE      # 720
 
 # --- World size (in tiles) ---
-WORLD_WIDTH = 40
-WORLD_HEIGHT = 30
+WORLD_WIDTH = 130
+WORLD_HEIGHT = 100
+BLOCK_SIZE = 12
 
 # --- Misc ---
 FPS = 60
 PLAYER_SPEED = 1.5   # pixels per frame, at native (16px) resolution
 
+#---NPC----
+NPC_COUNT = 30
+NPC_SPEED = 0.9
+NPC_FLEE_SPEED = 2
+
+#---COMBAT---
+ATTACK_DURATION= 0.3
+ATTACK_REACH_MELEE = 5
+ATTACK_REACH_GUN = 30
+ATTACK_COOLDOWN = 0.25
+
+
 # --- Colors (used for things we don't load as images, e.g. background) ---
 BLACK = (0, 0, 0)
+RED_FLASH = (220, 60, 60)
+
