@@ -26,6 +26,11 @@ no copyright issues).
 
 - Arrow keys or WASD: move around
 - ESC: quit
+- 1 : equip sword
+- 2 : equip gun
+- SPACE: sword swing
+- F :shoot (gun)
+## WILL BE CHANGED TO THE MOUSE CONTROLLS AFTER THE GAME IS FINISHED
 - LEFT-CLICK: shoot
 - RIGHT-CLICK: stab
 
