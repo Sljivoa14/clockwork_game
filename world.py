@@ -1,13 +1,7 @@
 """
 world.py
 --------
-Defines the game world: a grid of tiles, which tiles you can walk on
-vs. which block you, and how to draw the visible part of the map.
-
-The map is represented as a 2D list of integers. Each integer is a
-"tile ID" that maps to a tile type (grass, road, building, etc.).
-This is a very common way games store maps - you'll see the same idea
-in tools like Tiled (a popular free map editor).
+Tile map: procedural city generation, asset loading, collision, drawing.
 
 Tile IDs:
   0  GRASS
@@ -23,26 +17,14 @@ Tile IDs:
   10 BUILDING_BRUTALIST  building_brutalist.png
 """
 
-
-
 import random
 import pygame
-from settings import TILE_SIZE, WORLD_WIDTH, WORLD_HEIGHT, RENDER_WIDTH, RENDER_HEIGHT, BLOCK_SIZE
+from settings import (
+    TILE_SIZE, WORLD_WIDTH, WORLD_HEIGHT,
+    RENDER_WIDTH, RENDER_HEIGHT, BLOCK_SIZE,
+)
 
-# --- Tile IDs ---
-"""GRASS = 0
-ROAD = 1
-SIDEWALK = 2
-BUILDING = 3
-
-TREE = 4
-
-BUILDING_brutalist = 5
-BUILDING_office = 6
-BUILDING_shop = 7
-BUILDING_tenement = 8
-"""
-
+# ── Tile ID constants ──────────────────────────────────────────────────────────
 GRASS               = 0
 ROAD                = 1
 SIDEWALK            = 2
@@ -55,15 +37,20 @@ BUILDING_SHOP       = 8
 BUILDING_TENEMENT   = 9
 BUILDING_BRUTALIST  = 10
 
-# Which tile IDs the player CANNOT walk through.
-SOLID_TILES = { BUILDING, BUILDING2,BUILDING_OFFICE, BUILDING_SHOP,
-    BUILDING_TENEMENT, BUILDING_BRUTALIST, TREE, TREE2,
+SOLID_TILES = {
+    BUILDING, BUILDING2,
+    BUILDING_OFFICE, BUILDING_SHOP,
+    BUILDING_TENEMENT, BUILDING_BRUTALIST,
+    TREE, TREE2,
 }
 
-
+# Building styles randomly assigned to city blocks
 INTERIOR_BUILDINGS = [
-    BUILDING, BUILDING2, BUILDING_OFFICE, BUILDING_SHOP, BUILDING_TENEMENT, BUILDING_BRUTALIST
+    BUILDING, BUILDING2,
+    BUILDING_OFFICE, BUILDING_SHOP,
+    BUILDING_TENEMENT, BUILDING_BRUTALIST,
 ]
+
 
 def _free_bands(blocked: set, length: int):
     """Return (start, end) inclusive index ranges NOT in `blocked`."""
@@ -73,62 +60,13 @@ def _free_bands(blocked: set, length: int):
             if start is None:
                 start = i
         else:
-            if starts is not None:
-                bands.append((start, i -1))
+            if start is not None:
+                bands.append((start, i - 1))
                 start = None
     if start is not None:
         bands.append((start, length - 1))
     return bands
 
-"""
-def generate_map():
-    
-    Builds the starting area as a 2D list: map_data[y][x] -> tile id.
-    Layout idea:
-    - A ring of buildings around the whole map (so the player can't
-      wander off into the void yet).
-    - A horizontal road + vertical road crossing in the middle, each
-      with sidewalks on either side.
-    - The rest is grass, with a handful of trees scattered around.
-    
-    width, height = WORLD_WIDTH, WORLD_HEIGHT
-    map_data = [[GRASS for _ in range(width)] for _ in range(height)]
-
-    # --- Outer wall of buildings ---
-    for x in range(width):
-        map_data[0][x] = BUILDING
-        map_data[height - 1][x] = BUILDING
-    for y in range(height):
-        map_data[y][0] = BUILDING
-        map_data[y][width - 1] = BUILDING
-
-    # --- Horizontal road across the middle, with sidewalks ---
-    road_row = height // 2
-    for x in range(width):
-        map_data[road_row - 1][x] = SIDEWALK
-        map_data[road_row][x] = ROAD
-        map_data[road_row + 1][x] = ROAD
-        map_data[road_row + 2][x] = SIDEWALK
-
-    # --- Vertical road down the middle, with sidewalks ---
-    road_col = width // 2
-    for y in range(height):
-        map_data[y][road_col - 1] = SIDEWALK
-        map_data[y][road_col] = ROAD
-        map_data[y][road_col + 1] = ROAD
-        map_data[y][road_col + 2] = SIDEWALK
-
-    # --- Scatter some trees on the grass (deterministic so the map
-    #     is the same every time you run the game) ---
-    rng = random.Random(42)
-    for _ in range(30):
-        x = rng.randint(2, width - 3)
-        y = rng.randint(2, height - 3)
-        if map_data[y][x] == GRASS:
-            map_data[y][x] = TREE
-
-    return map_data
-"""
 
 def generate_map():
     """
