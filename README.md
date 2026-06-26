@@ -36,7 +36,12 @@ no copyright issues).
 | `world.py`     | The tile map: what tiles exist, where, and which are solid |
 | `player.py`    | The player: position, input handling, collision, animation |
 | `main.py`      | The game loop that ties it all together |
-
+| `npc_0.png`    | npc n1 |
+| `npc_1.png`    | npc n2 |
+| `npc_2.png`    | npc n3|
+| `npc_4.png`    | npc n4 |
+| `buidlings`    | diff types of building |
+| `tile`         | diff types of tiles |
 ## What's next (suggested order)
 
 This is intentionally minimal so the code stays readable. Good next
