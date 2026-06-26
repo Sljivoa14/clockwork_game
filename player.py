@@ -195,3 +195,14 @@ class Player:
             "left":  (pygame.transform.rotate(sword,  90), (sx - TILE_SIZE, sy)),
             "right": (pygame.transform.rotate(sword, -90), (sx + TILE_SIZE, sy)),
         }
+
+    def _draw_gun(self, surface, sx, sy):
+        gun = self.gun_image
+        offsets = {
+            "up":    (pygame.transform.rotate(gun,   90), (sx,                    sy - TILE_SIZE // 2)),
+            "down":  (pygame.transform.rotate(gun,  -90), (sx,                    sy + TILE_SIZE // 2)),
+            "left":  (pygame.transform.flip(gun, True, False), (sx - TILE_SIZE,   sy)),
+            "right": (gun,                                      (sx + TILE_SIZE // 2, sy)),
+        }
+        rotated, pos = offsets[self.facing]
+        surface.blit(rotated, pos)
