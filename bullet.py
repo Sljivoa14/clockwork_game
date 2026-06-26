@@ -23,5 +23,28 @@ class bullet:
         self.distance_travelled = 0.0
         self.alive = True
 
+        # Visual: a tiny 3x3 bright rectangle
         self.size = 3
+
         
+        def update(self, world):
+            if not self.alive:
+                return
+            self.x += self.dx * BULLET_SPEED
+            self.y += self.dy * BULLET_SPEED
+            self.distance_travelled += BULLET_SPEED
+
+        # Disappear if it hits a wall or travels too far
+        if self.distance_travelled >= BULLET_MAX_RANGE:
+            self.alive = False
+        elif world.is_solid_pixel(self.x, self.y):
+            self.alive = False
+
+        def get_rect(self):
+            return pygame.Rect(int(self.x), int(self.y)),
+        def draw(self, surface, camera_x, camera_y):
+            if not self.alive:
+                return
+            sx = int(self.x - camera_x)
+            sy = int(self.y - camera_y)
+            pygame.draw.rect(surface, (255, 230, 80), (sx, sy, self.size, self.size))
