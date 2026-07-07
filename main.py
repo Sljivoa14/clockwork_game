@@ -46,18 +46,18 @@ NPC_SPRITES = [
 STAR_FULL  = (255, 210,  0)
 STAR_EMPTY = ( 60,  60, 60)
 
-def compute_camera(player, world):
+def compute_camera(player, World):
     cam_x = player.x + TILE_SIZE / 2 - RENDER_WIDTH  / 2
     cam_y = player.y + TILE_SIZE / 2 - RENDER_HEIGHT / 2
-    cam_x = max(0, min(cam_x, world.pixel_width()  - RENDER_WIDTH))
-    cam_y = max(0, min(cam_y, world.pixel_height() - RENDER_HEIGHT))
+    cam_x = max(0, min(cam_x, World.pixel_width()  - RENDER_WIDTH))
+    cam_y = max(0, min(cam_y, World.pixel_height() - RENDER_HEIGHT))
     return cam_x, cam_y
 
 
-def spawn_npcs(world, rng):
+def spawn_npcs(World, rng):
     npcs = []
     for _ in range(NPC_COUNT):
-        tx, ty = find_open_tile(world.map_data, rng)
+        tx, ty = find_open_tile(World.map_data, rng)
         sprite  = rng.choice(NPC_SPRITES)
         npcs.append(NPC(tx * TILE_SIZE, ty * TILE_SIZE, sprite, rng))
     return npcs

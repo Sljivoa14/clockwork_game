@@ -15,7 +15,7 @@ CHASE_RANGE       = 80     # pixels — how close before an aggressive NPC chase
 CONTACT_DAMAGE_CD = 0.5    # seconds between contact-damage ticks
 
 class NPC:
-    def __init__(self, x, y, rng, sprite_path):
+    def __init__(self, x, y, sprite_path, rng):
         self.x   = float(x)
         self.y   = float(y)
         self.rng = rng

@@ -8,7 +8,7 @@ import pygame
 from settings import (
     TILE_SIZE, PLAYER_SPEED,
     ATTACK_DURATION, ATTACK_COOLDOWN, ATTACK_REACH_MELEE,
-    PLAYER_MAX_HP, ATTACK_COOLDOWN,
+    PLAYER_MAX_HP,
 )
 
 from bullet import Bullet
