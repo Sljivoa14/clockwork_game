@@ -7,7 +7,6 @@ Travels in a straight line until it hits an NPC or travels too far.
 
 import pygame
 from settings import BULLET_SPEED, BULLET_MAX_RANGE
-from world import world
 
 DIR_VECTORS = {
     "up" : (0, -1),
