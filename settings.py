@@ -4,6 +4,10 @@ settings.py
 All the "tunable knobs" for the game live here. Keeping constants in one
 place means if you want to make the player faster, or the window bigger,
 you change ONE number instead of hunting through every file.
+
+
+
+5
 """
 
 # --- Pixel art resolution ---
