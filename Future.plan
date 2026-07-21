@@ -1,0 +1,228 @@
+
+    # GAME DEVELOPMENT .PLAN
+
+## Project
+
+Game: [GAME NAME]
+
+Current Version: v0.1.0
+
+Status: In Development
+
+---
+
+# CURRENT FOCUS
+
+* [ ] [Main thing currently being worked on]
+* [ ] [Second priority]
+* [ ] [Third priority]
+
+---
+
+# FUTURE ADD-ONS
+
+## Gameplay
+
+* [ ] [New gameplay mechanic]
+* [ ] [New game mode]
+* [ ] [New ability/system]
+* [ ] [New challenge or objective]
+
+## Content
+
+* [ ] [New levels]
+* [ ] [New maps]
+* [ ] [New enemies]
+* [ ] [New characters]
+* [ ] [New items]
+* [ ] [New missions]
+
+## Progression
+
+* [ ] [XP system]
+* [ ] [Leveling system]
+* [ ] [Unlockable content]
+* [ ] [Achievements]
+* [ ] [Ranks or leaderboards]
+
+## UI / UX
+
+* [ ] [Main menu improvements]
+* [ ] [Settings menu]
+* [ ] [Pause menu]
+* [ ] [Better HUD]
+* [ ] [Animations]
+* [ ] [Sound effects]
+* [ ] [Music]
+
+## Technical
+
+* [ ] [Save system]
+* [ ] [Loading system]
+* [ ] [Performance optimization]
+* [ ] [Mobile support]
+* [ ] [Controller support]
+* [ ] [Online/multiplayer functionality]
+
+---
+
+# BUGS
+
+## CRITICAL
+
+Bugs that break the game or make it impossible to continue.
+
+* [ ] [Bug description]
+* [ ] [Bug description]
+
+## HIGH PRIORITY
+
+Major bugs that significantly affect gameplay.
+
+* [ ] [Bug description]
+* [ ] [Bug description]
+
+## LOW PRIORITY
+
+Minor bugs that do not seriously affect gameplay.
+
+* [ ] [Bug description]
+* [ ] [Bug description]
+
+---
+
+# BUGS FIXED
+
+## Version 0.1.0
+
+* [x] [Fixed bug description]
+* [x] [Fixed bug description]
+
+## Version 0.2.0
+
+* [ ] [Fixed bug description]
+
+---
+
+# IMPROVEMENTS
+
+Things that already work but could become better.
+
+* [ ] Improve [system]
+* [ ] Make [feature] faster
+* [ ] Improve animations
+* [ ] Improve graphics
+* [ ] Improve sound design
+* [ ] Improve controls
+* [ ] Improve performance
+* [ ] Improve code organization
+
+---
+
+# IDEAS
+
+Random ideas that may or may not become actual features.
+
+* [ ] [Idea]
+* [ ] [Idea]
+* [ ] [Idea]
+
+---
+
+# CURRENT PROBLEMS
+
+Problems that need investigation.
+
+* [ ] [Problem]
+* [ ] [Problem]
+
+---
+
+# NEXT MILESTONE
+
+## Version 0.2.0
+
+### Main Goal
+
+[Describe the main objective of this version.]
+
+### Features
+
+* [ ] [Feature]
+* [ ] [Feature]
+* [ ] [Feature]
+
+### Bug Fixes
+
+* [ ] [Bug fix]
+* [ ] [Bug fix]
+
+### Improvements
+
+* [ ] [Improvement]
+* [ ] [Improvement]
+
+---
+
+# VERSION HISTORY
+
+## v0.1.0 — Initial Release
+
+* Created the basic game
+* Added core gameplay
+* Added basic controls
+* Added initial UI
+
+## v0.2.0 — Planned
+
+* [Future changes]
+
+---
+
+# DEVELOPMENT LOG
+
+## [DATE]
+
+### Added
+
+* [What was added]
+
+### Fixed
+
+* [What was fixed]
+
+### Changed
+
+* [What was changed]
+
+### Learned
+
+* [What was learned]
+
+### Next
+
+* [What should be done next]
+
+---
+
+# LONG-TERM VISION
+
+The final goal of this project:
+
+> [Describe what you want this game to eventually become.]
+
+---
+
+# CURRENT STATUS
+
+Current Version: v0.1.0
+
+Main Focus: [Current focus]
+
+Next Task: [Next task]
+
+Last Major Change: [Last major change]
+
+Known Bugs: [Number]
+
+Planned Features: [Number]
