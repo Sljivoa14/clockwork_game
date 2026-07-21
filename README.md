@@ -1,4 +1,4 @@
-# Pixel City - Prototype (v0.1)
+# Pixel City - Prototype (v0.4.0)
 
 A tiny top-down open-world prototype built with Python + Pygame.
 This is the foundation: a movable character, a tile-based map, a
@@ -44,14 +44,20 @@ no copyright issues).
 | `player.py`    | The player: position, input handling, collision, animation |
 | `main.py`      | The game loop that ties it all together |
 | `npc.py`       | The behavior of npcs |
-| `bullet.py`      | the phisics of trajectery of the bullet |
+| `bullet.py`    | the phisics of trajectery of the bullet |
 | `npc_0.png`    | npc n1 |
 | `npc_1.png`    | npc n2 |
 | `npc_2.png`    | npc n3|
 | `npc_4.png`    | npc n4 |
 | `buidlings`    | diff types of building |
-| `tile`         | diff types of tiles |
-## What's next (suggested order)
+| `building_brutalist.png` | brutalist type of building |
+| `building_office.png` | office type of buidling |
+|`building_shop.png`| shop look alike building |
+|`building_tenement.png`| a tenement style building |
+| `tile`         | diff types of tiles ( grass, sidewalk, road, trees, and more soon..) |
+
+## What's next !
+YOU MAY READ THE NEXT AddOns in the Future.plan file!
 
 This is intentionally minimal so the code stays readable: 
 <p size= "300px">SPLEASE NOTE THAT IF YOU ARE READING THIS THAT THE GAME IS STILL PROGRESS!!!</p>
