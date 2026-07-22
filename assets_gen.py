@@ -155,7 +155,40 @@ def make_person_sheet(jacket=(45,45,50), hair=(40,20,20),
             img.putpixel((3, y), jacket)
             img.putpixel((12,y), jacket)
 
-            
+    
+    #----------Frame 0: right leg forward, left leg back----------
+    frame0 = new_tile()
+    draw_base(frame0)
+    #left leg (back) - shorter, starts lower the the other
+    for x in range(6, 8):
+        for y in range(13, 16):
+            frame0.putpixel((x, y), pants)
+        frame0.putpixel((x, 15), boots)
+    #right leg (forward) - full lenth
+    for x in range(9, 11):
+        for y in range(11, 16):
+            frame0.putpixel((x, y), pants)
+        frame0.putpixel((x, 15), boots)
+
+
+    #------frame 1: left leg forward, right leg back---------------
+    frame1 = new_tile()
+    draw_base(frame1)
+    #left leg forward /full length
+    for x in range(6, 8):
+        for y in range(11, 16):
+            frame1.putpixel((x, y), pants)
+        frame1.putpixel((x, 15), boots)
+    #right leg (back) - shorter, starts lower then the other
+    for x in range(9, 11):
+        for y in range(13, 16):
+            frame1.putpixel((x, y), pants)
+        frame1.putpixel((x, 15), boots)
+
+    
+    sheet.paste(frame0, (0, 0))
+    sheet.paste(frame1, (0, TILE))
+    return sheet
 
 def make_player_one():
     new = new
