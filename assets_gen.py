@@ -119,6 +119,48 @@ def make_tree():
     return img
 
 
+"""
+    16x32 sprite sheet: frame 0 (top 16px) = right leg forward,
+    frame 1 (bottom 16px) = left leg forward.
+    Both frames have eyes and a mouth now.
+"""
+def make_person_sheet(jacket=(45,45,50), hair=(40,20,20),
+                      pants=(35,35,60),  skin=(224,172,133)):
+    sheet = Image.new("RGBA", (TILE, TILE * 2), (0, 0, 0, 0))
+    boots = (20, 20, 20)
+    eye_color = (30, 20,20)
+    mouth_col = (160, 90, 80)
+    def draw_base(img):
+        #head
+        for x in range(5, 11):
+            for y in range(1, 6):
+                img.putpixel((x, y), skin)
+        #hair
+        for (x ,y) in [(5,1),(6,0),(7,0),(8,0),(9,0),(10,1),(4,2),(11,2)]:
+            img.putpixel((x, y), hair)
+        
+        #eyes
+        img.putpixel((6, 3), eye_color)
+        img.putpixel((9,3), eye_color)
+
+        #mouth
+        img.putpixel((7, 4), mouth_col)
+        img.putpixel((8, 5), mouth_col)
+
+        #torso
+        for x in range(4, 12):
+            for y in range(6, 12):
+                img.putpixel((x, y), jacket)
+        for y in range(6, 11):
+            img.putpixel((3, y), jacket)
+            img.putpixel((12,y), jacket)
+
+            
+
+def make_player_one():
+    new = new
+    return new
+
 def make_player_two():
     new = new
     return new
