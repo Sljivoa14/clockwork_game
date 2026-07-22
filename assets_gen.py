@@ -348,9 +348,6 @@ def make_gun():
     return img
 
 
-
-
-
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     assets = {
@@ -370,95 +367,21 @@ def main():
         "cop.png":   make_cop_sheet(),
     }
 
+    for filename, img in assets.items():
+        path = os.path.join(OUT_DIR, filename)
+        img.save(path)
+        print(f"Wrote {path}")
+            
+if __name__ == "__main__":
+    main()
+
+
+
+"""
 def make_player_one():
     new = new
     return new
 
 def make_player_two():
     new = new
-    return new
-
-def make_player_sheet():
-    """
-    Returns a 16x32 image: two 16x16 frames stacked vertically.
-    Frame 0 (top)    = standing
-    Frame 1 (bottom) = mid-step (for a simple walk animation)
-    """
-    sheet = Image.new("RGBA", (TILE, TILE * 2), (0, 0, 0, 0))
-
-    jacket = (45, 45, 50)     # dark jacket
-    skin = (224, 172, 133)    # skin tone
-    hair = (40, 20, 20)       # dark red-brown hair
-    pants = (35, 35, 60)      # dark denim
-    boots = (20, 20, 20)
-
-    def draw_base(img):
-        # Head
-        for x in range(5, 11):
-            for y in range(1, 6):
-                img.putpixel((x, y), skin)
-        # Hair (top of head + a bit on the sides, spiky)
-        for (x, y) in [(5, 1), (6, 0), (7, 0), (8, 0), (9, 0), (10, 1), (4, 2), (11, 2)]:
-            img.putpixel((x, y), hair)
-        # Torso / jacket
-        for x in range(4, 12):
-            for y in range(6, 12):
-                img.putpixel((x, y), jacket)
-        # Arms (slightly darker than jacket for shading)
-        for y in range(6, 11):
-            img.putpixel((3, y), jacket)
-            img.putpixel((12, y), jacket)
-
-    # Frame 0: standing, legs together
-    frame0 = new_tile()
-    draw_base(frame0)
-    for x in range(5, 7):
-        for y in range(12, 15):
-            frame0.putpixel((x, y), pants)
-    for x in range(9, 11):
-        for y in range(12, 15):
-            frame0.putpixel((x, y), pants)
-    for x in range(5, 7):
-        frame0.putpixel((x, 15), boots)
-    for x in range(9, 11):
-        frame0.putpixel((x, 15), boots)
-
-    # Frame 1: walking, legs apart (one forward, one back)
-    frame1 = new_tile()
-    draw_base(frame1)
-    for x in range(4, 6):
-        for y in range(12, 15):
-            frame1.putpixel((x, y), pants)
-    for x in range(10, 12):
-        for y in range(12, 15):
-            frame1.putpixel((x, y), pants)
-    for x in range(4, 6):
-        frame1.putpixel((x, 15), boots)
-    for x in range(10, 12):
-        frame1.putpixel((x, 15), boots)
-
-    sheet.paste(frame0, (0, 0))
-    sheet.paste(frame1, (0, TILE))
-    return sheet
-
-
-def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
-
-    tiles = {
-        "tile_grass.png": make_grass(),
-        "tile_road.png": make_road(),
-        "tile_sidewalk.png": make_sidewalk(),
-        "tile_building.png": make_building(),
-        "tile_tree.png": make_tree(),
-        "player.png": make_player_sheet(),
-    }
-
-    for filename, img in tiles.items():
-        path = os.path.join(OUT_DIR, filename)
-        img.save(path)
-        print(f"Wrote {path}")
-
-
-if __name__ == "__main__":
-    main()
+    return new """
