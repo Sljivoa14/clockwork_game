@@ -24,7 +24,7 @@ class Bullet:
         self.alive = True
 
         # Visual: a tiny 3x3 bright rectangle
-        self.size = 3
+        self.size = 1 #or 2
 
     def update(self, world):
         if not self.alive:
@@ -45,6 +45,5 @@ class Bullet:
     def draw(self, surface, camera_x, camera_y):
         if not self.alive:
             return
-        sx = int(self.x - camera_x)
-        sy = int(self.y - camera_y)
-        pygame.draw.rect(surface, (255, 230, 80), (sx, sy, self.size, self.size))
+        pygame.draw.rect(surface, (255, 230, 80),
+                         (int(self.x - camera_x), int(self.y - camera_y), self.size, self.size))

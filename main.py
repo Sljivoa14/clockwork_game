@@ -40,6 +40,7 @@ NPC_SPRITES = [
     "assets/npc_1.png",
     "assets/npc_2.png",
     "assets/npc_4.png",
+    "assets/cop.png"
 ]
 
 # Wanted star colors for the HUD

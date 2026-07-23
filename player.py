@@ -26,7 +26,9 @@ class Player:
             "stand": sheet.subsurface(pygame.Rect(0, 0,         TILE_SIZE, TILE_SIZE)),
             "walk":  sheet.subsurface(pygame.Rect(0, TILE_SIZE, TILE_SIZE, TILE_SIZE)),
         }
-        self.gun_image   = pygame.image.load("assets/gun.png").convert_alpha()
+
+        raw_gun = pygame.image.load("assets/gun.png").convert_alpha()
+        self.gun_image = pygame.transform.scale(raw_gun, (8, 8))
         self.sword_image = pygame.image.load("assets/sword.png").convert_alpha()
 
         # --- State ---
@@ -43,6 +45,7 @@ class Player:
 
         # --- Weapons ---
         # weapon: "sword" or "gun"
+
         self.weapon = "sword"
 
         # Sword timers
@@ -195,6 +198,8 @@ class Player:
             "left":  (pygame.transform.rotate(sword,  90), (sx - TILE_SIZE, sy)),
             "right": (pygame.transform.rotate(sword, -90), (sx + TILE_SIZE, sy)),
         }
+        rotated, pos = offsets[slef.facing]
+        surface.blit(rotated, pos)
 
     def _draw_gun(self, surface, sx, sy):
         gun = self.gun_image
