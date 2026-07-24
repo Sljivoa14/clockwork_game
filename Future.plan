@@ -13,9 +13,10 @@ Status: In Development
 
 # CURRENT FOCUS
 
-* [ WEAPONS_USAGE ] [Main thing currently being worked on]
-* [ NPC_BEHAVIOR ] [Second priority]
-* [ BUGS_IN_GENERAL_ ] [Third priority]
+* [ WEAPONS_USAGE ] [done]
+* [ NPC_BEHAVIOR ] [Main thing currently being worked on]
+    |-> 1.COP, 2. normal npc's
+* [ BUGS_IN_GENERAL_ ] [side]
 
 ---
 
@@ -23,9 +24,9 @@ Status: In Development
 
 ## Gameplay
 -> fo the charecter
-* [ JOBS ]
+* [ JOBS ] 
 * [ ILLIGAL_JOBS] 
-* [ MONEY ] 
+* [ MONEY ] now working on
 * [ AI_implemantation] 
 
 ## Content
