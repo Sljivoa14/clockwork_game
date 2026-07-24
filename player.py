@@ -56,6 +56,9 @@ class Player:
         self.gun_cooldown_timer = 0.0
         self.bullets = []          # list of Bullet objects owned by the player
 
+        self.money  = 0
+        self.xp = 0
+        self.xp_to_next_level = XP_TO_LEVEL
     # ── Properties ────────────────────────────────────────────────────────────
 
     @property
