@@ -34,17 +34,17 @@ from settings import (
     COP_SPEED, COP_SPAWN_ON_CRIME, COP_CHASE_RANGE,
 )
 
-from world import World, find_open_tile
+from world import World, find_open_tile, ROAD, SIDEWALK
 
 from player import Player
 from npc import NPC
+from cop import Cop
 
-NPC_SPRITES = [
+CIVILIAN_SPRITES = [
     "assets/npc_0.png",
     "assets/npc_1.png",
     "assets/npc_2.png",
     "assets/npc_4.png",
-    "assets/cop.png"
 ]
 COP_SPRITE = "assets/cop.png"
 
@@ -60,27 +60,27 @@ def compute_camera(player, World):
     return cam_x, cam_y
 
 
-def spawn_npcs(World, rng):
+def spawn_npcs(world, rng):
     npcs = []
     for _ in range(NPC_COUNT):
-        tx, ty = find_open_tile(World.map_data, rng)
-        sprite  = rng.choice(NPC_SPRITES)
+        tx, ty = find_open_tile(world.map_data, rng)
+        sprite  = rng.choice(CIVILIAN_SPRITES)
         npcs.append(NPC(tx * TILE_SIZE, ty * TILE_SIZE, sprite, rng))
     return npcs
 
-def spawn_cops(world, rng):
+def spawn_cop(world, rng):
     tx, ty = find_open_tile(world.map_data, rng)
-    return NPC(tx * TILE_SIZE, ty * TILE_SIZE, COP_SPRITE, rng, role = "cop")
+    return Cop(tx * TILE_SIZE, ty * TILE_SIZE, COP_SPRITE, rng)
 
-def spawn_money_random(world, rng): #we have a 1% chance to find money randomly on the floor
+def spawn_money_random(world, rng): # we have a 1% chance to find money randomly on the floor
     while True:
         tx, ty  = find_open_tile(world.map_data, rng)
-        tile = world.tile_at[ty][tx]
+        tile = world.tile_at(tx, ty)
         if tile in (ROAD, SIDEWALK):
             break
     return {
-        "x": tx * TILE_SIZE + TILE_SIZE / 2,
-        "y": ty * TILE_SIZE + TILE_SIZE / 2,
+        "x": tx * TILE_SIZE + TILE_SIZE // 2,
+        "y": ty * TILE_SIZE + TILE_SIZE // 2,
         "value": MONEY_VALUE
     }
 
@@ -167,30 +167,11 @@ def main():
     player.xp = 0
     player.xp_to_next_level = XP_TO_LEVEL   
     npcs   = spawn_npcs(world, rng)
-    money_pickup = []
+    money_pickups = []
 
     def spawn_cops_4_crime():
         for _ in range(COP_SPAWN_ON_CRIME):
-            npcs.append(spawn_cops(world, rng))
-
-
-
-    if rng.random() < MONEY_SPAWN_CHANCE_PER_SECOND * dt:
-        money_pickup.append(spawn_money_random(world, rng))
-        new_money_pickup = []
-        for pickup in money_pickup:
-            pickup_rect = pygame.Rect(
-                int(pickup["x"] - MONEY_PICKUP_SIZE / 2),
-                int(pickup["y"] - MONEY_PICKUP_SIZE / 2),
-                MONEY_PICKUP_SIZE, MONEY_PICKUP_SIZE
-            )
-            if player_rect.collidarect(pickup_rect):
-                player.earn_money(pickup["value"])
-                player.earn_xp(XP_PER_PICKUP)
-            else:
-                new_money_pickup.append(pickup)
-            money_pickup = new_money_pickup
-            
+            npcs.append(spawn_cop(world, rng))
     # Wanted system state
     wanted_level       = 0          # 0-5 stars
     wanted_decay_timer = 0.0        # counts up; resets when player hits someone
@@ -227,6 +208,9 @@ def main():
                         # Each sword hit adds to the chaos meter
                         wanted_level       = min(WANTED_MAX, wanted_level + 1)
                         wanted_decay_timer = 0.0   # reset decay clock
+                        # Reward XP and alert cops
+                        player.earn_xp(XP_PER_KILL)
+                        spawn_cops_4_crime()
 
         # Bullet hits
         for bullet in player.bullets:
@@ -238,6 +222,9 @@ def main():
                     bullet.alive = False
                     wanted_level       = min(WANTED_MAX, wanted_level + 1)
                     wanted_decay_timer = 0.0
+                    # Reward XP and alert cops
+                    player.earn_xp(XP_PER_KILL)
+                    spawn_cops_4_crime()
                     break
 
         # Update NPCs; collect any contact damage they want to deal
@@ -248,6 +235,24 @@ def main():
 
         # Remove dead NPCs
         npcs = [n for n in npcs if n.alive]
+
+        # Money spawn (random on roads/sidewalks) and pickup handling
+        if rng.random() < MONEY_SPAWN_CHANCE_PER_SECOND * dt:
+            money_pickups.append(spawn_money_random(world, rng))
+
+        new_money_pickups = []
+        for pickup in money_pickups:
+            pickup_rect = pygame.Rect(
+                int(pickup["x"] - MONEY_PICKUP_SIZE / 2),
+                int(pickup["y"] - MONEY_PICKUP_SIZE / 2),
+                MONEY_PICKUP_SIZE, MONEY_PICKUP_SIZE
+            )
+            if player_rect.colliderect(pickup_rect):
+                player.earn_money(pickup["value"])
+                player.earn_xp(XP_PER_PICKUP)
+            else:
+                new_money_pickups.append(pickup)
+        money_pickups = new_money_pickups
 
         # Wanted decay: reduce one star if player lays low long enough
         if wanted_level > 0:
@@ -265,6 +270,14 @@ def main():
         # ── Draw ──────────────────────────────────────────────────────────────
         render_surface.fill(BLACK)
         world.draw(render_surface, cam_x, cam_y)
+
+        # Draw money pickups
+        for pickup in money_pickups:
+            px = int(pickup["x"] - cam_x)
+            py = int(pickup["y"] - cam_y)
+            pygame.draw.rect(render_surface, MONEY_COLOR,
+                             (px - MONEY_PICKUP_SIZE//2, py - MONEY_PICKUP_SIZE//2,
+                              MONEY_PICKUP_SIZE, MONEY_PICKUP_SIZE))
 
         for npc in npcs:
             npc.draw(render_surface, cam_x, cam_y)
