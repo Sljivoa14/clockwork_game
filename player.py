@@ -8,7 +8,7 @@ import pygame
 from settings import (
     TILE_SIZE, PLAYER_SPEED,
     ATTACK_DURATION, ATTACK_COOLDOWN, ATTACK_REACH_MELEE,
-    PLAYER_MAX_HP,
+    PLAYER_MAX_HP, XP_TO_LEVEL,
 )
 
 from bullet import Bullet
@@ -147,6 +147,12 @@ class Player:
         if self.hp == 0:
             self.alive = False
 
+    def earn_money(self, amount):
+        self.money += amount
+
+    def earn_xp(self, amount):
+        self.xp = min(self.xp_to_next_level, self.xp + amount)
+
     def get_attack_rect(self):
         rect = self.get_rect()
         if self.facing == "left":
@@ -201,7 +207,7 @@ class Player:
             "left":  (pygame.transform.rotate(sword,  90), (sx - TILE_SIZE, sy)),
             "right": (pygame.transform.rotate(sword, -90), (sx + TILE_SIZE, sy)),
         }
-        rotated, pos = offsets[slef.facing]
+        rotated, pos = offsets[self.facing]
         surface.blit(rotated, pos)
 
     def _draw_gun(self, surface, sx, sy):

@@ -1,11 +1,11 @@
 """
 cop.py file
 -
-COP NPC behavior. cop appears when we did crimes(hurt npcs, and more will be added).
+COP NPC behavior. cop appears when we did crimes (hurt npcs, and more will be added).
 """
-import pygame
-import npc from NPC #will be fixed tommowrow
 
+import pygame
+from npc import NPC
 from settings import (
     TILE_SIZE,
     COP_SPEED,
