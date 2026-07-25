@@ -5,7 +5,7 @@ NPC: wander, flee when hit, chase + attack when wanted level is high enough.
 """
 
 import pygame
-from settings import TILE_SIZE, NPC_SPEED, NPC_FLEE_SPEED, RED_FLASH, NPC_CONTACT_DAMAGE
+from settings import TILE_SIZE, NPC_SPEED, NPC_FLEE_SPEED, RED_FLASH, NPC_CONTACT_DAMAGE, COP_CONTACT_DAMAGE_CD
 
 DIRECTIONS = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
 
@@ -63,7 +63,8 @@ class NPC:
         if self.hp <= 0:
             self.alive = False
             return
-        self.flee_timer = 3.0
+        if not self.is_cop:
+            self.flee_timer = 3.0
 
     def _pick_direction(self):
         if self.rng.random () < 0.35:
@@ -105,7 +106,36 @@ class NPC:
         else:
             if self.idle_timer > 0:
                 self.idle_timer -= dt
-                dx, dy = (0, 0)
+                dx, dy = 0, 0
+            else:
+                self.move_timer -= dt
+                if self.move_timer <= 0:
+                    self._pick_direction()
+                dx, dy = self.direction
+            speed = NPC_SPEED
+
+        moving = (dx, dy) != (0,0)
+        if dx < 0:
+            self.facing_left = True
+        elif dx > 0:
+            self.facing_left = False
+
+        if dx != 0:
+            r = pygame.Rect(int(self.x), int(self.y + dy * speed), self.width, self.height)
+            if not world.rect_collides(r):
+                self.y += dy * speed
+            elif not self.is_cop:
+                self._pick_direction()
+
+        if (agressive
+                and self.contact_dmg_timer <= 0
+                and self.get_rect(). colliderect(player_rect)):
+            self.contact_dmg_timer = COP_CONTACT_DAMAGE_CD if self.is_cop else CONTACT_DAMAGE_CD
+            self._wants_to_damage_player = True
+        else:
+            self._wants_to_damage_player = False
+        self._update_animation(dt, moving)
+
                 
     def _away_from(self, player_rect):
         dx = self.x - player_rect.x
