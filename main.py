@@ -1,6 +1,7 @@
 """
 main.py
--------
+_______
+
 The entry point. This is where the actual "game loop" lives:
 
     while running:
@@ -10,15 +11,14 @@ The entry point. This is where the actual "game loop" lives:
 
 Run with:
     python main.py
-
-    Game loop: input → update → draw.
+        Game loop: input → update → draw
 Controls:
-  WASD / arrows  move
-  1              equip sword
-  2              equip gun
-  SPACE          sword swing
-  F              shoot (gun)
-  ESC            quit
+    WASD / arrows  move
+    1              equip sword
+    2              equip gun
+    SPACE          sword swing
+    F              shoot (gun)
+    ESC            quit
 """
 import random
 import pygame
@@ -28,6 +28,10 @@ from settings import (
     FPS, BLACK, TILE_SIZE, NPC_COUNT,
     PLAYER_MAX_HP, WANTED_MAX, WANTED_DECAY_TIME,
     NPC_CONTACT_DAMAGE, BULLET_DAMAGE,
+    MONEY_SPAWN_CHANCE_PER_SECOND, MONEY_PICKUP_SIZE, MONEY_VALUE,
+    MONEY_COLOR, XP_BAR_WIDTH, XP_BAR_HEIGHT, XP_BAR_COLOR,
+    XP_PER_KILL, XP_PER_PICKUP, XP_TO_LEVEL,
+    COP_SPEED, COP_SPAWN_ON_CRIME, COP_CHASE_RANGE,
 )
 
 from world import World, find_open_tile
@@ -42,6 +46,7 @@ NPC_SPRITES = [
     "assets/npc_4.png",
     "assets/cop.png"
 ]
+COP_SPRITE = "assets/cop.png"
 
 # Wanted star colors for the HUD
 STAR_FULL  = (255, 210,  0)
@@ -62,6 +67,22 @@ def spawn_npcs(World, rng):
         sprite  = rng.choice(NPC_SPRITES)
         npcs.append(NPC(tx * TILE_SIZE, ty * TILE_SIZE, sprite, rng))
     return npcs
+
+def spawn_cops(world, rng):
+    tx, ty = find_open_tile(world.map_data, rng)
+    return NPC(tx * TILE_SIZE, ty * TILE_SIZE, COP_SPRITE, rng, role = "cop")
+
+def spawn_money_random(world, rng): #we have a 1% chance to find money randomly on the floor
+    while True:
+        tx, ty  = find_open_tile(world.map_data, rng)
+        tile = world.tile_at[ty][tx]
+        if tile in (ROAD, SIDEWALK):
+            break
+    return {
+        "x": tx * TILE_SIZE + TILE_SIZE / 2,
+        "y": ty * TILE_SIZE + TILE_SIZE / 2,
+        "value": MONEY_VALUE
+    }
 
 
 def draw_hud(surface, player, wanted_level):
@@ -97,7 +118,6 @@ def draw_hud(surface, player, wanted_level):
 
     if fill_w > 0:
         pygame.draw.rect(surface, bar_color, (bar_x, bar_y, fill_w, bar_h))
-
     # Thin white border
     pygame.draw.rect(surface, (200, 200, 200), (bar_x, bar_y, bar_w, bar_h), 1)
 
@@ -110,13 +130,24 @@ def draw_hud(surface, player, wanted_level):
         sx = pad + i * (star_size + star_gap)
         pygame.draw.rect(surface, color, (sx, star_y, star_size, star_size))
 
-    # ── Weapon indicator ─────────────────────────────────────────────────────
-    # We just draw a tiny colored square (no font needed):
-    # white = sword, yellow = gun
     weapon_color = (255, 255, 100) if player.weapon == "gun" else (200, 200, 200)
     wx = pad
     wy = star_y + star_size + 3
     pygame.draw.rect(surface, weapon_color, (wx, wy, 5, 5))
+
+    # Top-right money + xp
+    font = pygame.font.Font(None, 16)
+    money_text = font.render(f"${player.money}", True, MONEY_COLOR)
+    mx = RENDER_WIDTH - money_text.get_width() - pad
+    my = pad
+    surface.blit(money_text, (mx, my))
+
+    xp_x = RENDER_WIDTH - XP_BAR_WIDTH - pad
+    xp_y = my + money_text.get_height() + 4
+    xp_pct = min(1.0, player.xp / player.xp_to_next_level)
+    pygame.draw.rect(surface, (40, 40, 40), (xp_x, xp_y, XP_BAR_WIDTH, XP_BAR_HEIGHT))
+    pygame.draw.rect(surface, XP_BAR_COLOR, (xp_x, xp_y, int(XP_BAR_WIDTH * xp_pct), XP_BAR_HEIGHT))
+    pygame.draw.rect(surface, (200, 200, 200), (xp_x, xp_y, XP_BAR_WIDTH, XP_BAR_HEIGHT), 1)
 
 
 def main():
@@ -132,8 +163,34 @@ def main():
 
     tx, ty = find_open_tile(world.map_data, random.Random(1))
     player = Player(tx * TILE_SIZE, ty * TILE_SIZE)
+    player.money =  50
+    player.xp = 0
+    player.xp_to_next_level = XP_TO_LEVEL   
     npcs   = spawn_npcs(world, rng)
+    money_pickup = []
 
+    def spawn_cops_4_crime():
+        for _ in range(COP_SPAWN_ON_CRIME):
+            npcs.append(spawn_cops(world, rng))
+
+
+
+    if rng.random() < MONEY_SPAWN_CHANCE_PER_SECOND * dt:
+        money_pickup.append(spawn_money_random(world, rng))
+        new_money_pickup = []
+        for pickup in money_pickup:
+            pickup_rect = pygame.Rect(
+                int(pickup["x"] - MONEY_PICKUP_SIZE / 2),
+                int(pickup["y"] - MONEY_PICKUP_SIZE / 2),
+                MONEY_PICKUP_SIZE, MONEY_PICKUP_SIZE
+            )
+            if player_rect.collidarect(pickup_rect):
+                player.earn_money(pickup["value"])
+                player.earn_xp(XP_PER_PICKUP)
+            else:
+                new_money_pickup.append(pickup)
+            money_pickup = new_money_pickup
+            
     # Wanted system state
     wanted_level       = 0          # 0-5 stars
     wanted_decay_timer = 0.0        # counts up; resets when player hits someone
