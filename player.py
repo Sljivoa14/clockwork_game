@@ -8,7 +8,7 @@ import pygame
 from settings import (
     TILE_SIZE, PLAYER_SPEED,
     ATTACK_DURATION, ATTACK_COOLDOWN, ATTACK_REACH_MELEE,
-    PLAYER_MAX_HP, XP_TO_LEVEL, JOB_COOLDOWN,
+    PLAYER_MAX_HP, XP_TO_LEVEL, JOB_COOLDOWN, ILLEGAL_JOB_COOLDOWN,
 )
 
 from bullet import Bullet
@@ -175,7 +175,10 @@ class Player:
     def do_job(self, job):
         self.earn_money(job["pay"])
         self.earn_xp(job["xp"])
-        self.job_cooldown_timer = JOB_COOLDOWN
+        if job["type"] == "illegal":
+            self.job_cooldown_timer = ILLEGAL_JOB_COOLDOWN # 15 mins
+        else:
+            self.job_cooldown_timer = JOB_COOLDOWN # 1 hour
 
     # ── Animation ──────────────────────────────────────────────────────────────
 
