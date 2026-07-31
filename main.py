@@ -34,7 +34,11 @@ from settings import (
     COP_SPEED, COP_SPAWN_ON_CRIME, COP_CHASE_RANGE,
 )
 
-from world import World, find_open_tile, ROAD, SIDEWALK
+from world import (
+    World, find_open_tile, ROAD, SIDEWALK,
+    BUILDING_OFFICE, BUILDING_SHOP,
+    BUILDING_TENEMENT, BUILDING_BRUTALIST,
+)
 
 from player import Player
 from npc import NPC
@@ -47,6 +51,15 @@ CIVILIAN_SPRITES = [
     "assets/npc_4.png",
 ]
 COP_SPRITE = "assets/cop.png"
+
+JOB_SITE_DEFS = {
+    BUILDING_OFFICE:   {"name": "Office Shift",        "type": "normal",  "pay": 40, "xp": 10, "wanted": 0},
+    BUILDING_SHOP:     {"name": "Store Job",           "type": "normal",  "pay": 30, "xp":  8, "wanted": 0},
+    BUILDING_TENEMENT: {"name": "Weed Deal",           "type": "illegal", "pay": 55, "xp": 12, "wanted": 1},
+    BUILDING_BRUTALIST:{"name": "Black Market Run",    "type": "illegal", "pay": 70, "xp": 15, "wanted": 1},
+}
+JOB_PROMPT_KEY = "E"
+JOB_MESSAGE_DURATION = 3.0
 
 # Wanted star colors for the HUD
 STAR_FULL  = (255, 210,  0)
@@ -83,6 +96,26 @@ def spawn_money_random(world, rng): # we have a 1% chance to find money randomly
         "y": ty * TILE_SIZE + TILE_SIZE // 2,
         "value": MONEY_VALUE
     }
+
+
+def find_adjacent_job_sites(world, player):
+    cx = player.x + player.width / 2
+    cy = player.y + player.height / 2
+    tx = int(cx // TILE_SIZE)
+    ty = int(cy // TILE_SIZE)
+
+    sites = []
+    for dx, dy in [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+        job = JOB_SITE_DEFS.get(world.tile_at(tx + dx, ty + dy))
+        if job is not None:
+            sites.append(job)
+    return sites
+
+
+def job_prompt_text(job):
+    if job["type"] == "illegal":
+        return f"Press {JOB_PROMPT_KEY} to do illegal job: {job['name']} (+${job['pay']}, +{job['wanted']} wanted)"
+    return f"Press {JOB_PROMPT_KEY} to do job: {job['name']} (+${job['pay']})"
 
 
 def draw_hud(surface, player, wanted_level):
@@ -168,6 +201,8 @@ def main():
     player.xp_to_next_level = XP_TO_LEVEL   
     npcs   = spawn_npcs(world, rng)
     money_pickups = []
+    job_message = ""
+    job_message_timer = 0.0
 
     def spawn_cops_4_crime():
         for _ in range(COP_SPAWN_ON_CRIME):
@@ -191,6 +226,19 @@ def main():
                     player.try_attack()
                 elif event.key == pygame.K_f:
                     player.try_shoot()
+                elif event.key == pygame.K_e:
+                    job_sites = find_adjacent_job_sites(world, player)
+                    if job_sites:
+                        job = job_sites[0]
+                        if player.can_do_job():
+                            player.do_job(job)
+                            if job["type"] == "illegal":
+                                wanted_level = min(WANTED_MAX, wanted_level + job["wanted"])
+                                wanted_decay_timer = 0.0
+                            job_message = f"{job['name']} earned ${job['pay']}"
+                        else:
+                            job_message = "Wait before working again"
+                        job_message_timer = JOB_MESSAGE_DURATION
 
         # ── Update ────────────────────────────────────────────────────────────
         keys = pygame.key.get_pressed()
@@ -261,6 +309,11 @@ def main():
                 wanted_level       = max(0, wanted_level - 1)
                 wanted_decay_timer = 0.0
 
+        if job_message_timer > 0:
+            job_message_timer -= dt
+            if job_message_timer <= 0:
+                job_message = ""
+
         # Check player death
         if not player.alive:
             running = False  # for now — later we can show a death screen
@@ -284,6 +337,18 @@ def main():
         player.draw(render_surface, cam_x, cam_y)
 
         draw_hud(render_surface, player, wanted_level)
+
+        font = pygame.font.Font(None, 16)
+        prompt_y = RENDER_HEIGHT - 18
+        job_sites = find_adjacent_job_sites(world, player)
+        if job_sites:
+            prompt_text = font.render(job_prompt_text(job_sites[0]), True, (255, 255, 255))
+            render_surface.blit(prompt_text, (4, prompt_y - prompt_text.get_height()))
+            prompt_y -= prompt_text.get_height() + 4
+
+        if job_message:
+            message_text = font.render(job_message, True, (180, 220, 255))
+            render_surface.blit(message_text, (4, prompt_y - message_text.get_height()))
 
         scaled = pygame.transform.scale(render_surface, (WINDOW_WIDTH, WINDOW_HEIGHT))
         window.blit(scaled, (0, 0))

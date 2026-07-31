@@ -8,7 +8,7 @@ import pygame
 from settings import (
     TILE_SIZE, PLAYER_SPEED,
     ATTACK_DURATION, ATTACK_COOLDOWN, ATTACK_REACH_MELEE,
-    PLAYER_MAX_HP, XP_TO_LEVEL,
+    PLAYER_MAX_HP, XP_TO_LEVEL, JOB_COOLDOWN,
 )
 
 from bullet import Bullet
@@ -58,8 +58,8 @@ class Player:
 
         self.money  = 0
         self.xp = 0
-        self.xp_to_next_level = XP_TO_LEVEL
-    # ── Properties ────────────────────────────────────────────────────────────
+        self.xp_to_next_level = XP_TO_LEVEL        
+        self.job_cooldown_timer = 0.0    # ── Properties ────────────────────────────────────────────────────────────
 
     @property
     def width(self):  return TILE_SIZE
@@ -114,6 +114,7 @@ class Player:
         if self.attack_timer > 0:          self.attack_timer          -= dt
         if self.attack_cooldown_timer > 0: self.attack_cooldown_timer -= dt
         if self.gun_cooldown_timer > 0:    self.gun_cooldown_timer    -= dt
+        if self.job_cooldown_timer > 0:    self.job_cooldown_timer   -= dt
 
         # Update bullets
         for b in self.bullets:
@@ -167,6 +168,14 @@ class Player:
         else:
             return pygame.Rect(rect.left, rect.bottom - rect.h // 2,
                                rect.w, ATTACK_REACH_MELEE + rect.h // 2)
+
+    def can_do_job(self):
+        return self.job_cooldown_timer <= 0
+
+    def do_job(self, job):
+        self.earn_money(job["pay"])
+        self.earn_xp(job["xp"])
+        self.job_cooldown_timer = JOB_COOLDOWN
 
     # ── Animation ──────────────────────────────────────────────────────────────
 
