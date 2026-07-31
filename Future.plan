@@ -14,7 +14,7 @@ Status: In Development
 # CURRENT FOCUS
 
 * [ WEAPONS_USAGE ] [done]
-* [ NPC_BEHAVIOR ] [Main thing currently being worked on]
+* [ NPC_BEHAVIOR ] [done]
     |-> 1.COP, 2. normal npc's
 * [ BUGS_IN_GENERAL_ ] [side]
 
@@ -22,11 +22,13 @@ Status: In Development
 
 # FUTURE ADD-ONS
 
+X = done
+empty = not done
 ## Gameplay
 -> fo the charecter
-* [ JOBS ] 
-* [ ILLIGAL_JOBS] 
-* [ MONEY ] now working on
+* [ JOBS ] X
+* [ ILLIGAL_JOBS] X
+* [ MONEY ] X
 * [ AI_implemantation] 
 
 ## Content
@@ -40,7 +42,7 @@ Status: In Development
 
 ## Progression
 
-* [ ] [XP system]
+* [ X ] [XP system]
 * [ ] [Leveling system]
 * [ ] [Unlockable content]
 * [ ] [Achievements]
@@ -69,15 +71,15 @@ Status: In Development
 
 Bugs that break the game or make it impossible to continue.
 
-* [ MOVEMENT ] [Bug description]
-* [ WEAPONS_USAGE] [Bug description]
+* [ MOVEMENT ] [done]
+* [ WEAPONS_USAGE] [done]
 
 ## HIGH PRIORITY
 
 Major bugs that significantly affect gameplay.
 
-* [ NPC_BEHAVIOR ] [Bug description]
-* [ NPC_DAMAGE] [Bug description]
+* [ NPC_BEHAVIOR ] [done]
+* [ NPC_DAMAGE] [done]
 
 ## LOW PRIORITY
 
@@ -128,9 +130,8 @@ Problems that need investigation.
 
 # NEXT MILESTONE
 
-## Version 0.5.0
+## Version 0.6.0
 
 ### Main Goal
-
-[making the actual demo!]
+MAKE THE GAME PLAYEBLE BY AN AI and OBSERVE WHAT HAPPENS!!!
 
