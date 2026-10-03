@@ -15,10 +15,16 @@ CHASE_RANGE       = 80     # pixels — how close before an aggressive NPC chase
 CONTACT_DAMAGE_CD = 0.5    # seconds between contact-damage ticks
 
 class NPC:
-    def __init__(self, x, y, rng, sprite_path):
-        self.x   = float(x)
-        self.y   = float(y)
-        self.rng = rng
+    def __init__(self, x, y, sprite_or_rng, rng=None):
+        self.x = float(x)
+        self.y = float(y)
+
+        if isinstance(sprite_or_rng, str):
+            self.rng = rng
+            sprite_path = sprite_or_rng
+        else:
+            self.rng = sprite_or_rng
+            sprite_path = rng
 
         sheet = pygame.image.load(sprite_path).convert_alpha()
         self.frames = {
@@ -43,6 +49,7 @@ class NPC:
         self.flee_timer       = 0.0
         self.hit_flash_timer  = 0.0
         self.contact_dmg_timer = 0.0   # cooldown so contact damage isn't instant per-frame
+        self._wants_to_damage_player = False
 
     @property
     def width(self):  return TILE_SIZE
