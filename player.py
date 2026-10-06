@@ -8,7 +8,7 @@ import pygame
 from settings import (
     TILE_SIZE, PLAYER_SPEED,
     ATTACK_DURATION, ATTACK_COOLDOWN, ATTACK_REACH_MELEE,
-    PLAYER_MAX_HP, ATTACK_COOLDOWN,
+    PLAYER_MAX_HP, XP_TO_LEVEL, JOB_COOLDOWN, ILLEGAL_JOB_COOLDOWN,
 )
 
 from bullet import Bullet
@@ -26,7 +26,9 @@ class Player:
             "stand": sheet.subsurface(pygame.Rect(0, 0,         TILE_SIZE, TILE_SIZE)),
             "walk":  sheet.subsurface(pygame.Rect(0, TILE_SIZE, TILE_SIZE, TILE_SIZE)),
         }
-        self.gun_image   = pygame.image.load("assets/gun.png").convert_alpha()
+
+        raw_gun = pygame.image.load("assets/gun.png").convert_alpha()
+        self.gun_image = pygame.transform.scale(raw_gun, (8, 8))
         self.sword_image = pygame.image.load("assets/sword.png").convert_alpha()
 
         # --- State ---
@@ -43,6 +45,7 @@ class Player:
 
         # --- Weapons ---
         # weapon: "sword" or "gun"
+
         self.weapon = "sword"
 
         # Sword timers
@@ -53,7 +56,10 @@ class Player:
         self.gun_cooldown_timer = 0.0
         self.bullets = []          # list of Bullet objects owned by the player
 
-    # ── Properties ────────────────────────────────────────────────────────────
+        self.money  = 0
+        self.xp = 0
+        self.xp_to_next_level = XP_TO_LEVEL        
+        self.job_cooldown_timer = 0.0    # ── Properties ────────────────────────────────────────────────────────────
 
     @property
     def width(self):  return TILE_SIZE
@@ -108,6 +114,7 @@ class Player:
         if self.attack_timer > 0:          self.attack_timer          -= dt
         if self.attack_cooldown_timer > 0: self.attack_cooldown_timer -= dt
         if self.gun_cooldown_timer > 0:    self.gun_cooldown_timer    -= dt
+        if self.job_cooldown_timer > 0:    self.job_cooldown_timer   -= dt
 
         # Update bullets
         for b in self.bullets:
@@ -141,6 +148,12 @@ class Player:
         if self.hp == 0:
             self.alive = False
 
+    def earn_money(self, amount):
+        self.money += amount
+
+    def earn_xp(self, amount):
+        self.xp = min(self.xp_to_next_level, self.xp + amount)
+
     def get_attack_rect(self):
         rect = self.get_rect()
         if self.facing == "left":
@@ -155,6 +168,17 @@ class Player:
         else:
             return pygame.Rect(rect.left, rect.bottom - rect.h // 2,
                                rect.w, ATTACK_REACH_MELEE + rect.h // 2)
+
+    def can_do_job(self):
+        return self.job_cooldown_timer <= 0
+
+    def do_job(self, job):
+        self.earn_money(job["pay"])
+        self.earn_xp(job["xp"])
+        if job["type"] == "illegal":
+            self.job_cooldown_timer = ILLEGAL_JOB_COOLDOWN # 15 mins
+        else:
+            self.job_cooldown_timer = JOB_COOLDOWN # 1 hour
 
     # ── Animation ──────────────────────────────────────────────────────────────
 

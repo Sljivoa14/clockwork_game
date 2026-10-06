@@ -14,8 +14,6 @@ DIR_VECTORS = {
     "left": (-1, 0),
     "right": (1, 0),
 }
-
-
 class Bullet:
     def __init__(self, x, y, facing):
         self.x = float(x)
@@ -25,12 +23,11 @@ class Bullet:
         self.alive = True
 
         # Visual: a tiny 3x3 bright rectangle
-        self.size = 3
+        self.size = 1 #or 2
 
     def update(self, world):
         if not self.alive:
             return
-
         self.x += self.dx * BULLET_SPEED
         self.y += self.dy * BULLET_SPEED
         self.distance_travelled += BULLET_SPEED
@@ -42,7 +39,6 @@ class Bullet:
 
     def get_rect(self):
         return pygame.Rect(int(self.x), int(self.y), self.size, self.size)
-
     def draw(self, surface, camera_x, camera_y):
         if not self.alive:
             return

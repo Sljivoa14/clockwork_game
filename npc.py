@@ -5,7 +5,10 @@ NPC: wander, flee when hit, chase + attack when wanted level is high enough.
 """
 
 import pygame
-from settings import TILE_SIZE, NPC_SPEED, NPC_FLEE_SPEED, RED_FLASH, NPC_CONTACT_DAMAGE
+from settings import (
+    TILE_SIZE, NPC_SPEED, NPC_FLEE_SPEED, RED_FLASH, NPC_CONTACT_DAMAGE,
+    COP_CONTACT_DAMAGE_CD,
+)
 
 DIRECTIONS = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
 
@@ -15,16 +18,12 @@ CHASE_RANGE       = 80     # pixels — how close before an aggressive NPC chase
 CONTACT_DAMAGE_CD = 0.5    # seconds between contact-damage ticks
 
 class NPC:
-    def __init__(self, x, y, sprite_or_rng, rng=None):
-        self.x = float(x)
-        self.y = float(y)
-
-        if isinstance(sprite_or_rng, str):
-            self.rng = rng
-            sprite_path = sprite_or_rng
-        else:
-            self.rng = sprite_or_rng
-            sprite_path = rng
+    def __init__(self, x, y, sprite_path, rng, role="civilian"):
+        self.x   = float(x)
+        self.y   = float(y)
+        self.rng = rng
+        self.role = role
+        self.is_cop = role == "cop"
 
         sheet = pygame.image.load(sprite_path).convert_alpha()
         self.frames = {
@@ -43,6 +42,8 @@ class NPC:
         # Wander state
         self.direction  = (0, 0)
         self.move_timer = 0.0
+        self.idle_timer = 0.0
+        self.pause_timer = 0.0
         self._pick_direction()
 
         # Reaction timers
@@ -65,82 +66,86 @@ class NPC:
         if self.hp <= 0:
             self.alive = False
             return
-        self.flee_timer = 3.0
+        if not self.is_cop:
+            self.flee_timer = 3.0
 
     def _pick_direction(self):
-        self.direction  = self.rng.choice(DIRECTIONS)
-        self.move_timer = self.rng.uniform(1.0, 3.0)
+        if self.rng.random () < 0.35:
+            self.direction = (0, 0)
+            self.idle_timer = self.rng.uniform(0.8, 2.0)
+        else:
+            self.direction = self.rng.choice(DIRECTIONS[1:])
+            self.move_timer = self.rng.uniform(1.0, 2.5)
+            self.idle_timer = 0.0
 
     def update(self, dt, world, player_rect, wanted_level):
         if not self.alive:
             return
+        if self.hit_flash_timer > 0:
+            self.hit_flash_timer -= dt
+        if self.contact_dmg_timer > 0:
+            self.contact_dmg_timer -= dt
+        if self.flee_timer > 0:
+            self.flee_timer -= dt
 
-        # Flash timer
-        if self.hit_flash_timer  > 0: self.hit_flash_timer  -= dt
-        if self.contact_dmg_timer > 0: self.contact_dmg_timer -= dt
-
-        # ── Decide movement mode ──────────────────────────────────────────────
         px, py = player_rect.centerx, player_rect.centery
         my_cx  = self.x + TILE_SIZE / 2
         my_cy  = self.y + TILE_SIZE / 2
-        dist   = ((my_cx - px)**2 + (my_cy - py)**2) ** 0.5
+        dist = ((my_cx - px)**2 + (my_cy - py)**2) ** 0.5
 
-        if self.flee_timer > 0:
-            # Fleeing from player after being hit
-            self.flee_timer -= dt
+        aggressive = self.is_cop or (wanted_level >= CHASE_WANTED and dist < CHASE_RANGE)
+
+        if self.flee_timer > 0 and not self.is_cop:
             dx, dy = self._away_from(player_rect)
-            speed  = NPC_FLEE_SPEED
-
-        elif wanted_level >= CHASE_WANTED and dist < CHASE_RANGE:
-            # Aggressive chase — head toward the player
+            speed = NPC_FLEE_SPEED
+        elif aggressive:
             dx = 1 if px > my_cx else (-1 if px < my_cx else 0)
             dy = 1 if py > my_cy else (-1 if py < my_cy else 0)
-            # Prefer the bigger axis so movement feels decisive
             if abs(px - my_cx) >= abs(py - my_cy):
                 dy = 0
             else:
                 dx = 0
             speed = NPC_FLEE_SPEED  # chase at flee speed — feels threatening
-
         else:
-            # Normal wander
-            self.move_timer -= dt
-            if self.move_timer <= 0:
-                self._pick_direction()
-            dx, dy = self.direction
-            speed  = NPC_SPEED
+            if self.idle_timer > 0:
+                self.idle_timer -= dt
+                dx, dy = 0, 0
+            else:
+                self.move_timer -= dt
+                if self.move_timer <= 0:
+                    self._pick_direction()
+                dx, dy = self.direction
+            speed = NPC_SPEED
 
-        # ── Apply movement ────────────────────────────────────────────────────
-        moving = (dx, dy) != (0, 0)
-        if dx < 0: self.facing_left = True
-        elif dx > 0: self.facing_left = False
+        moving = (dx, dy) != (0,0)
+        if dx < 0:
+            self.facing_left = True
+        elif dx > 0:
+            self.facing_left = False
 
         if dx != 0:
-            r = pygame.Rect(int(self.x + dx*speed), int(self.y), self.width, self.height)
+            r = pygame.Rect(int(self.x + dx * speed), int(self.y), self.width, self.height)
             if not world.rect_collides(r):
                 self.x += dx * speed
-            elif self.flee_timer <= 0:
+            elif not self.is_cop and self.flee_timer <= 0:
                 self._pick_direction()
 
         if dy != 0:
-            r = pygame.Rect(int(self.x), int(self.y + dy*speed), self.width, self.height)
+            r = pygame.Rect(int(self.x), int(self.y + dy * speed), self.width, self.height)
             if not world.rect_collides(r):
                 self.y += dy * speed
-            elif self.flee_timer <= 0:
+            elif not self.is_cop and self.flee_timer <= 0:
                 self._pick_direction()
 
-        # ── Contact damage to player ──────────────────────────────────────────
-        # Only deal damage when chasing (wanted >= threshold) and touching
-        if (wanted_level >= CHASE_WANTED
+        if (aggressive
                 and self.contact_dmg_timer <= 0
                 and self.get_rect().colliderect(player_rect)):
-            self.contact_dmg_timer = CONTACT_DAMAGE_CD
-            # Return a signal so main.py can call player.take_damage()
+            self.contact_dmg_timer = COP_CONTACT_DAMAGE_CD if self.is_cop else CONTACT_DAMAGE_CD
             self._wants_to_damage_player = True
         else:
             self._wants_to_damage_player = False
-
         self._update_animation(dt, moving)
+
 
     def _away_from(self, player_rect):
         dx = self.x - player_rect.x

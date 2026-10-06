@@ -4,6 +4,8 @@ settings.py
 All the "tunable knobs" for the game live here. Keeping constants in one
 place means if you want to make the player faster, or the window bigger,
 you change ONE number instead of hunting through every file.
+
+5
 """
 
 # --- Pixel art resolution ---
@@ -61,6 +63,28 @@ BULLET_SPEED = 2
 BULLET_DAMAGE= 40
 BULLET_MAX_RANGE = 220
 
-# Backward-compatible aliases kept 
+# Backward-compatible aliases.
 NPC_CONACT_DAMAGE = NPC_CONTACT_DAMAGE
 BULLET_MQX_RANGE = BULLET_MAX_RANGE
+
+# --- MONEY / XP / COP ---
+MONEY_SPAWN_CHANCE_PER_SECOND = 0.01
+MONEY_PICKUP_SIZE = 8
+MONEY_VALUE = 5
+MONEY_COLOR = (80, 220, 80)
+
+XP_PER_KILL = 15
+XP_PER_PICKUP = 3
+XP_TO_LEVEL = 100
+XP_BAR_WIDTH = 100
+XP_BAR_HEIGHT = 8
+XP_BAR_COLOR = (50, 220, 80)
+
+JOB_COOLDOWN = 50.5
+ILLEGAL_JOB_COOLDOWN = 10.5
+
+COP_SPEED = 1.4
+COP_CHASE_RANGE = 200
+COP_CONTACT_DAMAGE_CD = 0.35
+COP_CONTACT_DAMAGE = 12
+COP_SPAWN_ON_CRIME = 1  # number of cops spawned when wanted increases
